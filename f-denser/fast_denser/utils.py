@@ -14,12 +14,12 @@
 
 
 import random
-import keras
-from keras import backend
+import tensorflow.keras as tk
+from tensorflow.keras import backend
 from time import time
 import tensorflow as tf
 import numpy as np
-from keras.callbacks import Callback, ModelCheckpoint
+from tensorflow.keras.callbacks import Callback, ModelCheckpoint
 import os
 from fast_denser.utilities.data import load_dataset
 from multiprocessing import Pool
@@ -30,7 +30,7 @@ import contextlib
 
 DEBUG = False
 
-class TimedStopping(keras.callbacks.Callback):
+class TimedStopping(tk.callbacks.Callback):
     """
         Stop training when maximum time has passed.
         Code from:
@@ -68,7 +68,7 @@ class TimedStopping(keras.callbacks.Callback):
             verbosity mode
         """
 
-        super(keras.callbacks.Callback, self).__init__()
+        super(tk.callbacks.Callback, self).__init__()
 
         self.start_time = 0
         self.seconds = seconds
@@ -258,60 +258,60 @@ class Evaluator:
         """
 
         #input layer
-        inputs = keras.layers.Input(shape=input_size)
+        inputs = tk.layers.Input(shape=input_size)
 
         #Create layers -- ADD NEW LAYERS HERE
         layers = []
         for layer_type, layer_params in keras_layers:
             #convolutional layer
             if layer_type == 'conv':
-                conv_layer = keras.layers.Conv2D(filters=int(layer_params['num-filters'][0]),
+                conv_layer = tk.layers.Conv2D(filters=int(layer_params['num-filters'][0]),
                                                  kernel_size=(int(layer_params['filter-shape'][0]), int(layer_params['filter-shape'][0])),
                                                  strides=(int(layer_params['stride'][0]), int(layer_params['stride'][0])),
                                                  padding=layer_params['padding'][0],
                                                  activation=layer_params['act'][0],
                                                  use_bias=eval(layer_params['bias'][0]),
                                                  kernel_initializer='he_normal',
-                                                 kernel_regularizer=keras.regularizers.l2(0.0005))
+                                                 kernel_regularizer=tk.regularizers.l2(0.0005))
                 layers.append(conv_layer)
 
             #batch-normalisation
             elif layer_type == 'batch-norm':
                 #TODO - check because channels are not first
-                batch_norm = keras.layers.BatchNormalization()
+                batch_norm = tk.layers.BatchNormalization()
                 layers.append(batch_norm)
 
             #average pooling layer
             elif layer_type == 'pool-avg':
-                pool_avg = keras.layers.AveragePooling2D(pool_size=(int(layer_params['kernel-size'][0]), int(layer_params['kernel-size'][0])),
+                pool_avg = tk.layers.AveragePooling2D(pool_size=(int(layer_params['kernel-size'][0]), int(layer_params['kernel-size'][0])),
                                                          strides=int(layer_params['stride'][0]),
                                                          padding=layer_params['padding'][0])
                 layers.append(pool_avg)
 
             #max pooling layer
             elif layer_type == 'pool-max':
-                pool_max = keras.layers.MaxPooling2D(pool_size=(int(layer_params['kernel-size'][0]), int(layer_params['kernel-size'][0])),
+                pool_max = tk.layers.MaxPooling2D(pool_size=(int(layer_params['kernel-size'][0]), int(layer_params['kernel-size'][0])),
                                                              strides=int(layer_params['stride'][0]),
                                                              padding=layer_params['padding'][0])
                 layers.append(pool_max)
 
             #fully-connected layer
             elif layer_type == 'fc':
-                fc = keras.layers.Dense(int(layer_params['num-units'][0]),
+                fc = tk.layers.Dense(int(layer_params['num-units'][0]),
                                              activation=layer_params['act'][0],
                                              use_bias=eval(layer_params['bias'][0]),
                                              kernel_initializer='he_normal',
-                                             kernel_regularizer=keras.regularizers.l2(0.0005))
+                                             kernel_regularizer=tk.regularizers.l2(0.0005))
                 layers.append(fc)
 
             #dropout layer
             elif layer_type == 'dropout':
-                dropout = keras.layers.Dropout(rate=min(0.5, float(layer_params['rate'][0])))
+                dropout = tk.layers.Dropout(rate=min(0.5, float(layer_params['rate'][0])))
                 layers.append(dropout)
 
             #gru layer #TODO: initializers, recurrent dropout, dropout, unroll, reset_after
             elif layer_type == 'gru':
-                gru = keras.layers.GRU(units=int(layer_params['units'][0]),
+                gru = tk.layers.GRU(units=int(layer_params['units'][0]),
                                        activation=layer_params['act'][0],
                                        recurrent_activation=layer_params['rec_act'][0],
                                        use_bias=eval(layer_params['bias'][0]))
@@ -319,7 +319,7 @@ class Evaluator:
 
             #lstm layer #TODO: initializers, recurrent dropout, dropout, unroll, reset_after
             elif layer_type == 'lstm':
-                lstm = keras.layers.LSTM(units=int(layer_params['units'][0]),
+                lstm = tk.layers.LSTM(units=int(layer_params['units'][0]),
                                          activation=layer_params['act'][0],
                                          recurrent_activation=layer_params['rec_act'][0],
                                          use_bias=eval(layer_params['bias'][0]))
@@ -327,13 +327,13 @@ class Evaluator:
 
             #rnn #TODO: initializers, recurrent dropout, dropout, unroll, reset_after
             elif layer_type == 'rnn':
-                rnn = keras.layers.SimpleRNN(units=int(layer_params['units'][0]),
+                rnn = tk.layers.SimpleRNN(units=int(layer_params['units'][0]),
                                              activation=layer_params['act'][0],
                                              use_bias=eval(layer_params['bias'][0]))
                 layers.append(rnn)
 
             elif layer_type == 'conv1d': #todo initializer
-                conv1d = keras.layers.Conv1D(filters=int(layer_params['num-filters'][0]),
+                conv1d = tk.layers.Conv1D(filters=int(layer_params['num-filters'][0]),
                                              kernel_size=int(layer_params['kernel-size'][0]),
                                              strides=int(layer_params['strides'][0]),
                                              padding=layer_params['padding'][0],
@@ -362,7 +362,7 @@ class Evaluator:
                     else:
                         if keras_layers[layer_idx][0] == 'fc' and first_fc:
                             first_fc = False
-                            flatten = keras.layers.Flatten()(data_layers[keras_layers[layer_idx][1]['input'][0]])
+                            flatten = tk.layers.Flatten()(data_layers[keras_layers[layer_idx][1]['input'][0]])
                             data_layers.append(layer(flatten))
                             continue
 
@@ -382,21 +382,21 @@ class Evaluator:
                         if input_idx == -1:
                             if inputs.shape[-3:][0] > minimum_shape:
                                 actual_shape = int(inputs.shape[-3:][0])
-                                merge_signals.append(keras.layers.MaxPooling2D(pool_size=(actual_shape-(minimum_shape-1), actual_shape-(minimum_shape-1)), strides=1)(inputs))
+                                merge_signals.append(tk.layers.MaxPooling2D(pool_size=(actual_shape-(minimum_shape-1), actual_shape-(minimum_shape-1)), strides=1)(inputs))
                             else:
                                 merge_signals.append(inputs)
 
                         elif input_idx not in invalid_layers:
                             if data_layers[input_idx].shape[-3:][0] > minimum_shape:
                                 actual_shape = int(data_layers[input_idx].shape[-3:][0])
-                                merge_signals.append(keras.layers.MaxPooling2D(pool_size=(actual_shape-(minimum_shape-1), actual_shape-(minimum_shape-1)), strides=1)(data_layers[input_idx]))
+                                merge_signals.append(tk.layers.MaxPooling2D(pool_size=(actual_shape-(minimum_shape-1), actual_shape-(minimum_shape-1)), strides=1)(data_layers[input_idx]))
                             else:
                                 merge_signals.append(data_layers[input_idx])
 
                     if len(merge_signals) == 1:
                         merged_signal = merge_signals[0]
                     elif len(merge_signals) > 1:
-                        merged_signal = keras.layers.concatenate(merge_signals)
+                        merged_signal = tk.layers.concatenate(merge_signals)
                     else:
                         merged_signal = data_layers[-1]
 
@@ -409,7 +409,7 @@ class Evaluator:
                     print(e)
 
         
-        model = keras.models.Model(inputs=inputs, outputs=data_layers[-1])
+        model = tk.models.Model(inputs=inputs, outputs=data_layers[-1])
         
         if DEBUG:
             model.summary()
@@ -433,18 +433,18 @@ class Evaluator:
         """
 
         if learning['learning'] == 'rmsprop':
-            return keras.optimizers.RMSprop(learning_rate = float(learning['lr']),
+            return tk.optimizers.RMSprop(learning_rate = float(learning['lr']),
                                             rho = float(learning['rho']),
                                             decay = float(learning['decay']))
         
         elif learning['learning'] == 'gradient-descent':
-            return keras.optimizers.SGD(learning_rate = float(learning['lr']),
+            return tk.optimizers.SGD(learning_rate = float(learning['lr']),
                                         momentum = float(learning['momentum']),
                                         decay = float(learning['decay']),
                                         nesterov = bool(learning['nesterov']))
 
         elif learning['learning'] == 'adam':
-            return keras.optimizers.Adam(learning_rate = float(learning['lr']),
+            return tk.optimizers.Adam(learning_rate = float(learning['lr']),
                                          beta_1 = float(learning['beta1']),
                                          beta_2 = float(learning['beta2']),
                                          decay = float(learning['decay']))
@@ -497,7 +497,7 @@ class Evaluator:
         batch_size = int(keras_learning['batch_size'])
         
         if load_prev_weights and os.path.exists(parent_weights_path.replace('.hdf5', '.h5')):
-            model = keras.models.load_model(parent_weights_path.replace('.hdf5', '.h5'))
+            model = tk.models.load_model(parent_weights_path.replace('.hdf5', '.h5'))
 
         else:
             if load_prev_weights:
@@ -511,7 +511,7 @@ class Evaluator:
                           metrics=['accuracy'])
 
         #early stopping
-        early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',
+        early_stop = tk.callbacks.EarlyStopping(monitor='val_loss',
                                                    patience=int(keras_learning['early_stop']),
                                                    restore_best_weights=True)
 
@@ -564,7 +564,7 @@ class Evaluator:
         score.history['trainable_parameters'] = trainable_count
         score.history['accuracy_test'] = accuracy_test
 
-        keras.backend.clear_session()
+        tk.backend.clear_session()
 
         return score.history
 
@@ -585,7 +585,7 @@ class Evaluator:
                 Model accuracy
         """
 
-        model = keras.models.load_model(model_path)
+        model = tk.models.load_model(model_path)
         if datagen_test is None:
             y_pred = model.predict(self.dataset['x_test'])
         else:
@@ -641,10 +641,10 @@ def evaluate(args): #pragma: no cover
     try:
         return cnn_eval.evaluate(phenotype, load_prev_weights, weights_save_path, parent_weights_path, train_time, num_epochs, datagen, datagen_test)
     except tf.errors.ResourceExhaustedError as e:
-        keras.backend.clear_session()
+        tk.backend.clear_session()
         return None
     except TypeError as e2:
-        keras.backend.clear_session()
+        tk.backend.clear_session()
         return None
 
 

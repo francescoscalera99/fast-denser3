@@ -27,7 +27,7 @@ import os
 from shutil import copyfile
 from glob import glob
 import json
-from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from fast_denser.utilities.fitness_metrics import * 
 from jsmin import jsmin
 from fast_denser.utilities.data_augmentation import augmentation
