@@ -438,9 +438,12 @@ class Evaluator:
                                             decay = float(learning['decay']))
         
         elif learning['learning'] == 'gradient-descent':
-            return tf.keras.optimizers.legacy.SGD(learning_rate = float(learning['lr']),
+            lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+                initial_learning_rate=learning['lr'],
+                decay_steps=10000,
+                decay_rate=float(learning['decay']))
+            return tf.keras.optimizers.legacy.SGD(learning_rate = lr_schedule,
                                         momentum = float(learning['momentum']),
-                                        decay = float(learning['decay']),
                                         nesterov = bool(learning['nesterov']))
 
         elif learning['learning'] == 'adam':
