@@ -438,7 +438,7 @@ class Evaluator:
                                             decay = float(learning['decay']))
         
         elif learning['learning'] == 'gradient-descent':
-            return tk.optimizers.legacy.SGD(learning_rate = float(learning['lr']),
+            return tf.keras.optimizers.legacy.SGD(learning_rate = float(learning['lr']),
                                         momentum = float(learning['momentum']),
                                         decay = float(learning['decay']),
                                         nesterov = bool(learning['nesterov']))
