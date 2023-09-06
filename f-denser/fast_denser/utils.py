@@ -442,7 +442,7 @@ class Evaluator:
                 initial_learning_rate=learning['lr'],
                 decay_steps=10000,
                 decay_rate=float(learning['decay']))
-            return tf.keras.optimizers.legacy.SGD(learning_rate = lr_schedule,
+            return tf.keras.optimizers.SGD(learning_rate = lr_schedule,
                                         momentum = float(learning['momentum']),
                                         nesterov = bool(learning['nesterov']))
 
