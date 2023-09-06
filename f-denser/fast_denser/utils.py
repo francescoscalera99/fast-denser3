@@ -433,9 +433,12 @@ class Evaluator:
         """
 
         if learning['learning'] == 'rmsprop':
-            return tk.optimizers.RMSprop(learning_rate = float(learning['lr']),
-                                            rho = float(learning['rho']),
-                                            decay = float(learning['decay']))
+            lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+                initial_learning_rate=learning['lr'],
+                decay_steps=10000,
+                decay_rate=float(learning['decay']))
+            return tk.optimizers.RMSprop(learning_rate = lr_schedule,
+                                            rho = float(learning['rho']))
         
         elif learning['learning'] == 'gradient-descent':
             lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
@@ -447,10 +450,13 @@ class Evaluator:
                                         nesterov = bool(learning['nesterov']))
 
         elif learning['learning'] == 'adam':
-            return tk.optimizers.Adam(learning_rate = float(learning['lr']),
+            lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+                initial_learning_rate=learning['lr'],
+                decay_steps=10000,
+                decay_rate=float(learning['decay']))
+            return tk.optimizers.Adam(learning_rate = lr_schedule,
                                          beta_1 = float(learning['beta1']),
-                                         beta_2 = float(learning['beta2']),
-                                         decay = float(learning['decay']))
+                                         beta_2 = float(learning['beta2']))
 
 
     def evaluate(self, phenotype, load_prev_weights, weights_save_path, parent_weights_path,\
