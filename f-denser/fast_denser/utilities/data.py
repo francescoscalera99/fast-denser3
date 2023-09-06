@@ -17,11 +17,107 @@ from fast_denser.utilities.datasets.svhn import load_svhn
 from fast_denser.utilities.datasets.cifar import load_cifar
 from fast_denser.utilities.datasets.tiny_imagenet import load_tiny_imagenet
 from sklearn.model_selection import train_test_split
+import numpy as np
 import keras
 from multiprocessing import Pool
 import tensorflow as tf
 import contextlib
 import sys
+
+def extract_label(file_name, verbose=False):
+    data = {}
+    label = []
+    with open(file_name, "r") as fin:
+        reader = csv.reader(fin, delimiter=',')
+        first = True
+        for row in reader:
+            lbl = row[2]
+            if first or "TARGET" in lbl:
+                first = False
+                continue
+            lbl = lbl.replace("TCGA-","")
+
+            label.append(lbl)
+            if lbl in data.keys():
+                data[lbl] += 1 
+            else:
+                data[lbl] = 1
+    if verbose:
+        print(f"Number of classes in the dataset = {len(data)}")
+        pprint.pprint(data, indent=4)
+
+    return label
+
+def create_dictionary(labels):
+    dictionary = {}
+    class_names = np.unique(labels)
+    for i, name in enumerate(class_names):
+        dictionary[name] = i
+    return dictionary
+
+def label_processing(labels):
+    new_miRna_label = []
+    dictionary = create_dictionary(labels)
+    for i in labels:
+        new_miRna_label.append(dictionary[i])
+    return new_miRna_label
+
+def add_pad_data(data):
+  miR_data = data
+  c_int = math.ceil(np.sqrt(len(miR_data[0])))
+  pad = c_int ** 2 - len(miR_data[0])
+  pad_width = (0, pad)
+
+  padded_miR_data = np.zeros((miR_data.shape[0], miR_data.shape[1] + pad_width[1]))
+
+  for i in range(len(miR_data)):
+    padded_miR_data[i] = np.pad(miR_data[i], pad_width, mode='constant')
+
+  # reshape shape[1] into (c_int, c_int)
+
+  dim = int(np.sqrt(len(padded_miR_data[0])))
+  padded_miR_data = padded_miR_data.reshape((padded_miR_data.shape[0],1, dim, dim))
+
+  return padded_miR_data
+
+def top_10_dataset(miR_data, miR_label):
+  occ = dict({k: 0 for k in set(miR_label)})
+
+  for i in range(len(miR_label)):
+    occ[miR_label[i]] += 1
+
+  top_10_class = sorted(occ, key=occ.get,reverse=True)[:N]
+
+  list_top_10_train = []
+  list_top_10_labels = []
+
+  for i in range(len(miR_label)):
+    if miR_label[i] in top_10_class:
+      list_top_10_labels.append(miR_label[i])
+
+  for i in range(miR_data.shape[0]):
+    if miR_label[i] in top_10_class:
+      list_top_10_train.append(miR_data[i])
+
+  miR_data_reduced = np.stack(list_top_10_train, axis=0)
+  miR_label_reduced = list_top_10_labels
+
+  num_miR_label_reduced = label_processing(miR_label_reduced)
+
+  return miR_data_reduced, miR_label_reduced, num_miR_label_reduced
+
+def normalize(data, method='zscore'):
+    if method == "zscore":
+        return scipy.stats.zscore(data, axis=1)
+   
+    # log2 normalization
+    elif method=="log2":
+        data = data + abs(np.min(data)) + 0.001
+        return np.log2(data)
+    
+    # normalization between [0, 255]
+    else:
+       return (data - np.min(data)) / (np.max(data) - np.min(data)) * 255
 
 #dataset paths - change if the path is different
 SVHN = 'fast_denser/utilities/datasets/data/svhn'
@@ -197,10 +293,20 @@ def load_dataset(dataset, shape=(32,32)):
         x_train, y_train, x_test, y_test = load_tiny_imagenet(TINY_IMAGENET, shape)
         n_classes = 200
 
+    elif dataset == 'biomarkers':
+        miR_label = extract_label("fast_denser/utilities/datasets/data/tcga_mir_label.csv")
+        miR_data = np.genfromtxt('fast_denser/utilities/datasets/data/tcga_mir_rpm.csv', delimiter=',')[1:,0:-1]
+        number_to_delete = abs(len(miR_label) - miR_data.shape[0])
+        miR_data = miR_data[number_to_delete:,:]
+        # Convert labels in number 
+        num_miR_label = label_processing(miR_label)
+        miR_data = normalize(miR_data)
+        miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
+        x_train, y_train, x_test, y_test = train_test_split(miR_data, miR_label)
+        n_classes = 10
     else:
         print('Error: the dataset is not valid')
         sys.exit(-1)
-
 
     dataset = prepare_data(x_train, y_train, x_test, y_test, n_classes)
 
