@@ -314,7 +314,8 @@ def load_dataset(dataset, shape=(32,32)):
     #dataset = prepare_data(x_train, y_train, x_test, y_test, n_classes)
     print(x_train.shape)
     print(y_train.shape)
-    
+    print(x_test.shape)
+    print(y_test.shape)
     evo_x_train, x_val, evo_y_train, y_val = train_test_split(x_train, y_train,
                                                               stratify = y_train)
 
