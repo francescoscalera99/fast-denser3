@@ -321,10 +321,10 @@ def load_dataset(dataset, shape=(32,32)):
                                                                     stratify = y_val)
     print(evo_x_train.shape)
     dataset = {
-        'evo_x_train': evo_x_train, 'evo_y_train': evo_y_train,
-        'evo_x_val': evo_x_val, 'evo_y_val': evo_y_val,
-        'evo_x_test': evo_x_test, 'evo_y_test': evo_y_test,
-        'x_test': x_test, 'y_test': y_test
+        'evo_x_train': np.asarray(evo_x_train), 'evo_y_train': np.asarray(evo_y_train),
+        'evo_x_val': np.asarray(evo_x_val), 'evo_y_val': np.asarray(evo_y_val),
+        'evo_x_test': np.asarray(evo_x_test), 'evo_y_test': np.asarray(evo_y_test),
+        'x_test': np.asarray(x_test), 'y_test': np.asarray(y_test)
     }
     
     return dataset
