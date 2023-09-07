@@ -158,7 +158,6 @@ def prepare_data(x_train, y_train, x_test, y_test, n_classes=10):
                                           on unseen data
     """
 
-
     x_train = x_train.astype('float32')
     x_test = x_test.astype('float32')
 
@@ -312,6 +311,23 @@ def load_dataset(dataset, shape=(32,32)):
         print('Error: the dataset is not valid')
         sys.exit(-1)
 
-    dataset = prepare_data(x_train, y_train, x_test, y_test, n_classes)
+    #dataset = prepare_data(x_train, y_train, x_test, y_test, n_classes)
 
+    evo_x_train, x_val, evo_y_train, y_val = train_test_split(x_train, y_train,
+                                                              stratify = y_train)
+
+    evo_x_val, evo_x_test, evo_y_val, evo_y_test = train_test_split(x_val, y_val,
+                                                                    stratify = y_val)
+
+
+    evo_y_train = keras.utils.to_categorical(evo_y_train, n_classes)
+    evo_y_val = keras.utils.to_categorical(evo_y_val, n_classes)
+    
+    dataset = {
+        'evo_x_train': evo_x_train, 'evo_y_train': evo_y_train,
+        'evo_x_val': evo_x_val, 'evo_y_val': evo_y_val,
+        'evo_x_test': evo_x_test, 'evo_y_test': evo_y_test,
+        'x_test': x_test, 'y_test': y_test
+    }
+    
     return dataset
