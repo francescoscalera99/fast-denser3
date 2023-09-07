@@ -307,6 +307,7 @@ def load_dataset(dataset, shape=(32,32)):
         miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
         x_train, x_test, y_train, y_test = train_test_split(miR_data, miR_label)
         n_classes = 10
+        print(y_train)
     else:
         print('Error: the dataset is not valid')
         sys.exit(-1)
