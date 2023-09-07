@@ -317,7 +317,7 @@ def load_dataset(dataset, shape=(32,32)):
 
     evo_x_val, evo_x_test, evo_y_val, evo_y_test = train_test_split(x_val, y_val,
                                                                     stratify = y_val)
-
+    print(evo_x_train.shape)
     dataset = {
         'evo_x_train': evo_x_train, 'evo_y_train': evo_y_train,
         'evo_x_val': evo_x_val, 'evo_y_val': evo_y_val,
