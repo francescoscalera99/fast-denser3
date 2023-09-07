@@ -534,19 +534,28 @@ class Evaluator:
 
         trainable_count = model.count_params()
 
-        if datagen is not None:
-            score = model.fit_generator(datagen.flow(self.dataset['evo_x_train'],
-                                                 self.dataset['evo_y_train'],
-                                                 batch_size=batch_size),
-                                        steps_per_epoch=(self.dataset['evo_x_train'].shape[0]//batch_size),
-                                        epochs=int(keras_learning['epochs']),
-                                        validation_data=(datagen_test.flow(self.dataset['evo_x_val'], self.dataset['evo_y_val'], batch_size=batch_size)),
-                                        validation_steps = (self.dataset['evo_x_val'].shape[0]//batch_size),
-                                        callbacks = [early_stop, time_stop, monitor],
-                                        initial_epoch = num_epochs,
-                                        verbose= DEBUG)
-        else:
-            score = model.fit(x = self.dataset['evo_x_train'], 
+        # if datagen is not None:
+        #     score = model.fit_generator(datagen.flow(self.dataset['evo_x_train'],
+        #                                          self.dataset['evo_y_train'],
+        #                                          batch_size=batch_size),
+        #                                 steps_per_epoch=(self.dataset['evo_x_train'].shape[0]//batch_size),
+        #                                 epochs=int(keras_learning['epochs']),
+        #                                 validation_data=(datagen_test.flow(self.dataset['evo_x_val'], self.dataset['evo_y_val'], batch_size=batch_size)),
+        #                                 validation_steps = (self.dataset['evo_x_val'].shape[0]//batch_size),
+        #                                 callbacks = [early_stop, time_stop, monitor],
+        #                                 initial_epoch = num_epochs,
+        #                                 verbose= DEBUG)
+        # else:
+        #     score = model.fit(x = self.dataset['evo_x_train'], 
+        #                       y = self.dataset['evo_y_train'],
+        #                       batch_size = batch_size,
+        #                       epochs = int(keras_learning['epochs']),
+        #                       steps_per_epoch=(self.dataset['evo_x_train'].shape[0]//batch_size),
+        #                       validation_data=(self.dataset['evo_x_val'], self.dataset['evo_y_val']),
+        #                       callbacks = [early_stop, time_stop, monitor],
+        #                       initial_epoch = num_epochs,
+        #                       verbose = DEBUG)
+        score = model.fit(x = self.dataset['evo_x_train'], 
                               y = self.dataset['evo_y_train'],
                               batch_size = batch_size,
                               epochs = int(keras_learning['epochs']),
@@ -555,7 +564,6 @@ class Evaluator:
                               callbacks = [early_stop, time_stop, monitor],
                               initial_epoch = num_epochs,
                               verbose = DEBUG)
-
         #save final moodel to file
         model.save(weights_save_path.replace('.hdf5', '.h5'))
 
