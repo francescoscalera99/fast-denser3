@@ -20,7 +20,9 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import keras
 import pprint
+import math
 import csv 
+import scipy
 from multiprocessing import Pool
 import tensorflow as tf
 import contextlib
@@ -88,7 +90,7 @@ def top_10_dataset(miR_data, miR_label):
   for i in range(len(miR_label)):
     occ[miR_label[i]] += 1
 
-  top_10_class = sorted(occ, key=occ.get,reverse=True)[:N]
+  top_10_class = sorted(occ, key=occ.get,reverse=True)[:10]
 
   list_top_10_train = []
   list_top_10_labels = []
