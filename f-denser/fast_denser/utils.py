@@ -266,8 +266,8 @@ class Evaluator:
             #convolutional layer
             if layer_type == 'conv':
                 conv_layer = tk.layers.Conv1D(filters=int(layer_params['num-filters'][0]),
-                                                 kernel_size=(int(layer_params['filter-shape'][0]), int(layer_params['filter-shape'][0])),
-                                                 strides=(int(layer_params['stride'][0]), int(layer_params['stride'][0])),
+                                                 kernel_size=int(layer_params['filter-shape'][0]),
+                                                 strides=int(layer_params['stride'][0]),
                                                  padding=layer_params['padding'][0],
                                                  activation=layer_params['act'][0],
                                                  use_bias=eval(layer_params['bias'][0]),
@@ -283,14 +283,14 @@ class Evaluator:
 
             #average pooling layer
             elif layer_type == 'pool-avg':
-                pool_avg = tk.layers.AveragePooling1D(pool_size=(int(layer_params['kernel-size'][0]), int(layer_params['kernel-size'][0])),
+                pool_avg = tk.layers.AveragePooling1D(pool_size=int(layer_params['kernel-size'][0]),
                                                          strides=int(layer_params['stride'][0]),
                                                          padding=layer_params['padding'][0])
                 layers.append(pool_avg)
 
             #max pooling layer
             elif layer_type == 'pool-max':
-                pool_max = tk.layers.MaxPooling1D(pool_size=(int(layer_params['kernel-size'][0]), int(layer_params['kernel-size'][0])),
+                pool_max = tk.layers.MaxPooling1D(pool_size=int(layer_params['kernel-size'][0]),
                                                              strides=int(layer_params['stride'][0]),
                                                              padding=layer_params['padding'][0])
                 layers.append(pool_max)
