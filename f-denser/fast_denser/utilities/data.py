@@ -301,12 +301,12 @@ def load_dataset(dataset, shape=(32,32)):
         miR_data = np.genfromtxt('fast_denser/utilities/datasets/data/tcga_mir_rpm.csv', delimiter=',')[1:,0:-1]
         number_to_delete = abs(len(miR_label) - miR_data.shape[0])
         miR_data = miR_data[number_to_delete:,:]
-        # Convert labels in number 
-        num_miR_label = label_processing(miR_label)
+        
         miR_data = normalize(miR_data)
         miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
+        # Convert labels in number 
         num_miR_label = label_processing(miR_label)
-        x_train, x_test, y_train, y_test = train_test_split(miR_data, miR_label)
+        x_train, x_test, y_train, y_test = train_test_split(miR_data, num_miR_label)
         n_classes = 10
         print(y_train)
     else:
