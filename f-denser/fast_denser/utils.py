@@ -568,11 +568,12 @@ class Evaluator:
         model.save(weights_save_path.replace('.hdf5', '.h5'))
 
         #measure test performance
-        if datagen_test is None:
-            y_pred_test = model.predict(self.dataset['evo_x_test'], batch_size=batch_size, verbose=0)
-        else:
-            y_pred_test = model.predict_generator(datagen_test.flow(self.dataset['evo_x_test'], batch_size=100, shuffle=False), steps=self.dataset['evo_x_test'].shape[0]//100, verbose=DEBUG)
+        # if datagen_test is None:
+        #     y_pred_test = model.predict(self.dataset['evo_x_test'], batch_size=batch_size, verbose=0)
+        # else:
+        #     y_pred_test = model.predict_generator(datagen_test.flow(self.dataset['evo_x_test'], batch_size=100, shuffle=False), steps=self.dataset['evo_x_test'].shape[0]//100, verbose=DEBUG)
 
+        y_pred_test = model.predict(self.dataset['evo_x_test'], batch_size=batch_size, verbose=0)
         accuracy_test = self.fitness_metric(self.dataset['evo_y_test'], y_pred_test)
 
         if DEBUG:
