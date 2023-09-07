@@ -305,17 +305,13 @@ def load_dataset(dataset, shape=(32,32)):
         num_miR_label = label_processing(miR_label)
         miR_data = normalize(miR_data)
         miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
-        x_train, y_train, x_test, y_test = train_test_split(miR_data, miR_label)
+        x_train, x_test, y_train, y_test = train_test_split(miR_data, miR_label)
         n_classes = 10
     else:
         print('Error: the dataset is not valid')
         sys.exit(-1)
 
     #dataset = prepare_data(x_train, y_train, x_test, y_test, n_classes)
-    print(x_train.shape)
-    print(y_train.shape)
-    print(x_test.shape)
-    print(y_test.shape)
     evo_x_train, x_val, evo_y_train, y_val = train_test_split(x_train, y_train,
                                                               stratify = y_train)
 
