@@ -460,7 +460,7 @@ class Evaluator:
 
 
     def evaluate(self, phenotype, load_prev_weights, weights_save_path, parent_weights_path,\
-                 train_time, num_epochs, datagen=None, datagen_test = None, input_size=(1, 44, 44)): #pragma: no cover
+                 train_time, num_epochs, datagen=None, datagen_test = None, input_size=(44, 44, 1)): #pragma: no cover
         """
             Evaluates the keras model using the keras optimiser
 
