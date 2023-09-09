@@ -66,24 +66,6 @@ def label_processing(labels):
         new_miRna_label.append(dictionary[i])
     return new_miRna_label
 
-def add_pad_data(data):
-  miR_data = data
-  c_int = math.ceil(np.sqrt(len(miR_data[0])))
-  pad = c_int ** 2 - len(miR_data[0])
-  pad_width = (0, pad)
-
-  padded_miR_data = np.zeros((miR_data.shape[0], miR_data.shape[1] + pad_width[1]))
-
-  for i in range(len(miR_data)):
-    padded_miR_data[i] = np.pad(miR_data[i], pad_width, mode='constant')
-
-  # reshape shape[1] into (c_int, c_int)
-
-  dim = int(np.sqrt(len(padded_miR_data[0])))
-  padded_miR_data = padded_miR_data.reshape((padded_miR_data.shape[0], dim, dim, 1))
-
-  return padded_miR_data
-
 def top_10_dataset(miR_data, miR_label):
   occ = dict({k: 0 for k in set(miR_label)})
 
