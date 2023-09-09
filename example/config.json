@@ -11,10 +11,10 @@
     "num_generations": 150,
 
     //lambda, i.e., number of offspring
-    "lambda": 4,
+    "lambda": 9,
 
     //maximum of epochs to perform. Evolution is halted when the current number of epochs surpasses this value
-    "max_epochs": 10000,
+    "max_epochs": 20000,
 
     //place where the experiment is saved
     "save_path": "./experiments/",
