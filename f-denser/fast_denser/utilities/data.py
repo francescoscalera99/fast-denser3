@@ -143,7 +143,7 @@ def add_pad_data(data):
   # reshape shape[1] into (c_int, c_int)
 
   dim = int(np.sqrt(len(padded_miR_data[0])))
-  padded_miR_data = padded_miR_data.reshape((padded_miR_data.shape[0],1, dim, dim))
+  padded_miR_data = padded_miR_data.reshape((padded_miR_data.shape[0], dim, dim, 1))
 
   return padded_miR_data
 
@@ -330,11 +330,13 @@ def load_dataset(dataset, shape=(32,32)):
         miR_data = normalize(miR_data)
         miR_data = add_pad_data(miR_data)
 
+        print(miR_data.shape)
+
         miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
         # Convert labels in number 
         num_miR_label = label_processing(miR_label)
         x_train, x_test, y_train, y_test = train_test_split(miR_data, num_miR_label, test_size=0.20)
-        print(y_train)
+        
 
     else:
         print('Error: the dataset is not valid')
