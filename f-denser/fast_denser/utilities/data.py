@@ -110,18 +110,43 @@ def top_10_dataset(miR_data, miR_label):
 
   return miR_data_reduced, miR_label_reduced, num_miR_label_reduced
 
-def normalize(data, method='zscore'):
-    if method == "zscore":
-        return scipy.stats.zscore(data, axis=1)
+def normalize(data):
+    
+    data = scipy.stats.zscore(data, axis=1)
    
     # log2 normalization
-    elif method=="log2":
-        data = data + abs(np.min(data)) + 0.001
-        return np.log2(data)
+    
+    data = data + abs(np.min(data)) + 0.001
+    data = np.log2(data)
     
     # normalization between [0, 255]
-    else:
-       return (data - np.min(data)) / (np.max(data) - np.min(data)) * 255
+    data_min = data.min()
+    data_max = data.max()
+
+    data_norm =  (data - data_min) / data_max - data_min
+    # data_scaled = (data_norm * 255).astype(np.uint8)
+
+    return data_norm
+
+def add_pad_data(data):
+  
+  miR_data = data
+  c_int = math.ceil(np.sqrt(len(miR_data[0])))
+  pad = c_int ** 2 - len(miR_data[0])
+  pad_width = (0, pad)
+
+  padded_miR_data = np.zeros((miR_data.shape[0], miR_data.shape[1] + pad_width[1]))
+
+  for i in range(len(miR_data)):
+    padded_miR_data[i] = np.pad(miR_data[i], pad_width, mode='constant')
+
+  # reshape shape[1] into (c_int, c_int)
+
+  dim = int(np.sqrt(len(padded_miR_data[0])))
+  padded_miR_data = padded_miR_data.reshape((padded_miR_data.shape[0],1, dim, dim))
+
+  return padded_miR_data
+
 
 #dataset paths - change if the path is different
 SVHN = 'fast_denser/utilities/datasets/data/svhn'
@@ -303,12 +328,14 @@ def load_dataset(dataset, shape=(32,32)):
         miR_data = miR_data[number_to_delete:,:]
         
         miR_data = normalize(miR_data)
+        miR_data = add_pad_data(miR_data)
+
         miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
         # Convert labels in number 
         num_miR_label = label_processing(miR_label)
         x_train, x_test, y_train, y_test = train_test_split(miR_data, num_miR_label, test_size=0.20)
-        n_classes = 10
         print(y_train)
+        
     else:
         print('Error: the dataset is not valid')
         sys.exit(-1)
@@ -322,7 +349,7 @@ def load_dataset(dataset, shape=(32,32)):
     
     # evo_y_train = keras.utils.to_categorical(evo_y_train, n_classes)
     # evo_y_val = keras.utils.to_categorical(evo_y_val, n_classes)
-    
+
     dataset = {
         'evo_x_train': np.asarray(evo_x_train), 'evo_y_train': np.asarray(evo_y_train),
         'evo_x_val': np.asarray(evo_x_val), 'evo_y_val': np.asarray(evo_y_val),
