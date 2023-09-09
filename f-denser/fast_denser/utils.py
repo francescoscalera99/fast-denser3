@@ -516,7 +516,7 @@ class Evaluator:
             opt = self.assemble_optimiser(keras_learning)
 
             model.compile(optimizer=opt,
-                          loss='categorical_crossentropy',                          
+                          loss= tf.keras.losses.MeanSquaredError(),                          
                           metrics=['accuracy'])
 
         #early stopping
