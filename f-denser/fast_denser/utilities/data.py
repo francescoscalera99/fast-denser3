@@ -306,7 +306,7 @@ def load_dataset(dataset, shape=(32,32)):
         miR_data, miR_label, num_miR_label = top_10_dataset(miR_data, miR_label)
         # Convert labels in number 
         num_miR_label = label_processing(miR_label)
-        x_train, x_test, y_train, y_test = train_test_split(miR_data, num_miR_label)
+        x_train, x_test, y_train, y_test = train_test_split(miR_data, num_miR_label, test_size=0.20)
         n_classes = 10
         print(y_train)
     else:
