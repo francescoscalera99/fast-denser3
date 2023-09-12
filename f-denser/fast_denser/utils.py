@@ -382,14 +382,14 @@ class Evaluator:
                         if input_idx == -1:
                             if inputs.shape[-3:][0] > minimum_shape:
                                 actual_shape = int(inputs.shape[-3:][0])
-                                merge_signals.append(tk.layers.MaxPooling2D(pool_size=(actual_shape-(minimum_shape-1), actual_shape-(minimum_shape-1)), strides=1)(inputs))
+                                merge_signals.append(tk.layers.MaxPooling1D(pool_size=(actual_shape-(minimum_shape-1)), strides=1)(inputs))
                             else:
                                 merge_signals.append(inputs)
 
                         elif input_idx not in invalid_layers:
                             if data_layers[input_idx].shape[-3:][0] > minimum_shape:
                                 actual_shape = int(data_layers[input_idx].shape[-3:][0])
-                                merge_signals.append(tk.layers.MaxPooling2D(pool_size=(actual_shape-(minimum_shape-1), actual_shape-(minimum_shape-1)), strides=1)(data_layers[input_idx]))
+                                merge_signals.append(tk.layers.MaxPooling1D(pool_size=(actual_shape-(minimum_shape-1)), strides=1)(data_layers[input_idx]))
                             else:
                                 merge_signals.append(data_layers[input_idx])
 

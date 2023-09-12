@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+f-denser/experiments
 # C extensions
 *.so
 
